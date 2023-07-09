@@ -1,4 +1,8 @@
 import { Component, OnInit } from '@angular/core';
+import { ActivatedRoute } from '@angular/router';
+import { NavController } from '@ionic/angular';
+import { PlacesService } from '../../places.service';
+import { Place } from '../../places.model';
 
 @Component({
   selector: 'app-place-detail',
@@ -7,9 +11,36 @@ import { Component, OnInit } from '@angular/core';
 })
 export class PlaceDetailPage implements OnInit {
 
-  constructor() { }
+  place!: Place | undefined;
+
+
+  constructor(
+    private route: ActivatedRoute,
+    private navCtrl: NavController,
+    private placesService: PlacesService) { }
 
   ngOnInit() {
+    this.route.paramMap.subscribe( paramMap =>{
+      if(!paramMap.has('placeId')){
+        //redirect via bav controller if id does not exist
+        this.navCtrl.navigateBack('/places/tabs/discover');
+        return;
+      }
+
+      if(paramMap){
+        this.place = this.placesService.getPlace(paramMap.get('placeId')!);
+      }
+
+
+
+
+    });
+  }
+
+  //add onBookPlace
+  onBookPlace(){
+    // this.router.navigate(['/places/tabs/discover']);
+    this.navCtrl.navigateBack('/places/tabs/discover');
   }
 
 }

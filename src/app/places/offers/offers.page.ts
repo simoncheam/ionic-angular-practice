@@ -6,10 +6,13 @@ import { Component, OnInit } from '@angular/core';
   styleUrls: ['./offers.page.scss'],
 })
 export class OffersPage implements OnInit {
+offers: any;
+  // offers: Offers
 
   constructor() { }
 
   ngOnInit() {
+
   }
 
 }
