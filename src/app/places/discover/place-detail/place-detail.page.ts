@@ -1,6 +1,10 @@
 import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
-import { ModalController, NavController } from '@ionic/angular';
+import {
+  ActionSheetController,
+  ModalController,
+  NavController,
+} from '@ionic/angular';
 import { PlacesService } from '../../places.service';
 import { Place } from '../../places.model';
 import { CreateBookingComponent } from 'src/app/bookings/create-booking/create-booking.component';
@@ -17,7 +21,8 @@ export class PlaceDetailPage implements OnInit {
     private route: ActivatedRoute,
     private navCtrl: NavController,
     private placesService: PlacesService,
-    private modalCtrl: ModalController
+    private modalCtrl: ModalController,
+    private actionSheetCtrl: ActionSheetController
   ) {}
 
   ngOnInit() {
@@ -38,6 +43,43 @@ export class PlaceDetailPage implements OnInit {
   public async onBookPlace() {
     // this.router.navigate(['/places/tabs/discover']);
     // this.navCtrl.navigateBack('/places/tabs/discover');
+
+    this.actionSheetCtrl
+      .create({
+        header: 'Choose an Action',
+        buttons: [
+          {
+            text: 'Select Date',
+            handler: () => {
+              this.openBookingModal('select');
+            },
+          },
+          {
+            text: 'Random Date',
+            handler: () => {
+              this.openBookingModal('random');
+            },
+          },
+          {
+            text: 'Cancel',
+            role: 'cancel',
+          },
+        ],
+      })
+      .then((actionSheetEl) => {
+        actionSheetEl.present();
+      })
+      .catch((e) => {
+        console.log(e);
+      });
+  }
+
+  // public onCancel() {
+  //   this.modalCtrl.dismiss();
+  // }
+
+  async openBookingModal(mode: 'select' | 'random') {
+    console.log(mode);
     const modal = await this.modalCtrl.create({
       component: CreateBookingComponent,
       componentProps: { selectedPlace: this.place },
@@ -46,20 +88,15 @@ export class PlaceDetailPage implements OnInit {
     await modal.present();
     const bookedPlace = await modal.onDidDismiss();
     if (!bookedPlace.data) {
-      console.log('dismissed - no data')
+      console.log('dismissed - no data');
       return;
     } else {
       console.log('bookedPlace');
       console.log(bookedPlace.data);
       console.log(bookedPlace.role);
-      if (bookedPlace && bookedPlace.role ==='confirm') {
+      if (bookedPlace && bookedPlace.role === 'confirm') {
         console.log('BOOKED');
-
       }
     }
   }
-
-  // public onCancel() {
-  //   this.modalCtrl.dismiss();
-  // }
 }

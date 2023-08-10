@@ -4,9 +4,9 @@
   </ion-toolbar>
 </ion-header>
 
-<ion-content [fullscreen]="true" class="ion-padding">
-  <ion-button color="primary" (click)="onLogin()">Login
-
-  </ion-button>
-
+<ion-content [fullscreen]="true" class="ion-padding ion-justify-content-center">
+  <!-- <div class="ion-text-center">
+    <ion-spinner color="primary" *ngIf="isLoading"></ion-spinner>
+  </div> -->
+  <ion-button color="primary" (click)="onLogin()" >Login </ion-button>
 </ion-content>

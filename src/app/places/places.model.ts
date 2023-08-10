@@ -1,3 +1,4 @@
+
 export class Place {
   constructor(
     public id?: string,
@@ -7,3 +8,5 @@ export class Place {
     public price?: number
   ){}
 }
+
+

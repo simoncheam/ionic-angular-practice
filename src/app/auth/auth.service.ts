@@ -7,7 +7,7 @@ export class AuthService {
 
   constructor() { }
 
-  private _isAuthed: boolean = false;
+  private _isAuthed = true; // TODO: change to false after development
 
   //getter method to avoid overwriting _isAuthed
   get isAuthed(){
