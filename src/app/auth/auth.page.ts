@@ -2,6 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { AuthService } from './auth.service';
 import { Router } from '@angular/router';
 import { LoadingController } from '@ionic/angular';
+import { NgForm } from '@angular/forms';
 
 @Component({
   selector: 'app-auth',
@@ -10,6 +11,7 @@ import { LoadingController } from '@ionic/angular';
 })
 export class AuthPage implements OnInit {
   isLoading = false;
+  isLogin = true;
 
   constructor(
     private authService: AuthService,
@@ -38,5 +40,27 @@ export class AuthPage implements OnInit {
   onLogout() {
     this.authService.logout();
     this.router.navigateByUrl('/auth');
+  }
+
+  onSubmit(form: NgForm) {
+    console.log(form);
+    if (!form.valid) {
+      return;
+    }
+    const email = form.value.email;
+    const password = form.value.password;
+
+    if(this.isLogin){
+      //send request to login server
+    }else{
+      //send request to sign up
+    }
+
+    //this.authenticate(email, password);
+    form.reset();
+  }
+
+  onSwitchAuthMode() {
+    this.isLogin = !this.isLogin;
   }
 }
