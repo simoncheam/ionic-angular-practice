@@ -6,45 +6,83 @@
       </ion-back-button>
     </ion-buttons>
     <ion-title>New Offers</ion-title>
+    <ion-buttons slot="primary">
+      <ion-button (click)="onCreateOffer()" [disabled]="!form.valid">
+        <ion-icon name="checkmark" slot="icon-only"></ion-icon>
+      </ion-button>
+    </ion-buttons>
   </ion-toolbar>
 </ion-header>
 
-<ion-content >
-  <ion-grid>
-    <!-- ! default - align-items-stretch / across vertical space -->
-    <!-- ! align-items-start /  takes up vertical space as needed -->
-    <ion-row class="ion-align-items-center ion-justify-content-center" >
-      <ion-col  size="4" size-sm="4" size-md="2" offset-sm="2" offset-md="4" >r1 c1 </ion-col>
+<ion-content>
+  <form [formGroup]="form">
 
-      <ion-col size="4" size-sm="4" size-md="3" >
-      <ion-card>
-        <ion-card-content>
-          <h1>The column</h1>
-          <p>Row 1 Col 2</p>
-        </ion-card-content>
-      </ion-card>
-      </ion-col>
-    </ion-row>
-    <ion-row>
-      <ion-col>
-        <ion-card>
-          <ion-card-content>
-            <h1>The column</h1>
-            <p>Row 2 Col 1</p>
-          </ion-card-content>
-        </ion-card>
-      </ion-col>
-      <ion-col>
-        <ion-card>
-          <ion-card-content>
-            <h1>The column</h1>
-            <p>Row 2 Col 2</p>
-          </ion-card-content>
-        </ion-card>
-      </ion-col>
-    </ion-row>
+    <ion-grid>
+      <ion-row>
+        <ion-col size-sm="6" offset-sm="3">
+          <ion-item>
+            <ion-label position="floating">Title</ion-label>
+            <ion-input type="text" autocomplete autocorrect formControlName="title"></ion-input>
+          </ion-item>
+        </ion-col>
+      </ion-row>
+      <ion-row>
+        <ion-col size-sm="6" offset-sm="3">
+          <ion-item>
+            <ion-label position="floating">Short Description</ion-label>
+            <ion-textarea rows="3" formControlName="description"> </ion-textarea>
+          </ion-item>
+        </ion-col>
+      </ion-row>
+      <ion-row *ngIf="!form.get('description')?.valid && form.get('description')?.touched">
+        <ion-col size-sm="6" offset-sm="3">
+          <p>Description must be shorter that 180 characters</p>
+        </ion-col>
+      </ion-row>
 
+      <ion-row>
+        <ion-col size-sm="6" offset-sm="3">
+          <ion-item>
+            <ion-label position="floating">Price</ion-label>
+            <ion-input type="number" formControlName="price"></ion-input>
+          </ion-item>
+        </ion-col>
+      </ion-row>
+      <ion-row>
+        <ion-col size-sm="3" offset-sm="3">
+          <ion-label position="floating">Available From</ion-label>
+          <ion-item class="no-ripple">
+            <ion-datetime-button slot="end" datetime="startdate" min="2023-01-01"
+              max="2025-12-13"></ion-datetime-button>
 
+            <ion-modal [keepContentsMounted]="true">
+              <ng-template>
 
-  </ion-grid>
+                <ion-datetime id="startdate" presentation="date" formControlName="dateFrom" presentation="date"
+                  [showDefaultButtons]="true" min="2023-01-01" max="2025-12-13"></ion-datetime>
+
+              </ng-template>
+            </ion-modal>
+          </ion-item>
+        </ion-col>
+        <ion-col size-sm="3">
+          <ion-label position="floating">Available To</ion-label>
+          <ion-item class="no-ripple">
+            <ion-datetime-button slot="end" datetime="enddate" min="2023-01-02" max="2025-12-13"></ion-datetime-button>
+            <ion-modal [keepContentsMounted]="true">
+              <ng-template>
+                <ion-datetime id="enddate" presentation="date" formControlName="dateTo" presentation="date"
+                  [showDefaultButtons]="true" min="2023-01-02" max="2025-12-13"></ion-datetime>
+              </ng-template>
+            </ion-modal>
+          </ion-item>
+        </ion-col>
+      </ion-row>
+
+      <!-- ! default - align-items-stretch / across vertical space -->
+      <!-- ! align-items-start /  takes up vertical space as needed -->
+
+    </ion-grid>
+  </form>
+
 </ion-content>

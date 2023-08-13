@@ -9,8 +9,213 @@
   </ion-toolbar>
 </ion-header>
 
-<ion-content class="ion-padding">
-  <h1>Book this place!</h1>
-  <p>{{ selectedPlace.description }}</p>
-  <ion-button color="primary" (click)="onBookPlace()">Book Now!</ion-button>
+<ion-content class="ion-padding ion-text-center" *ngIf="selectedPlace">
+  <form (ngSubmit)="onBookPlace()" #f="ngForm">
+  <ion-grid>
+    <ion-row>
+      <ion-col size-sm="6" offset-sm="3">
+        <ion-item>
+          <ion-label position="floating">First Name</ion-label>
+          <ion-input type="text" ngModel name="first-name" required></ion-input>
+        </ion-item>
+      </ion-col>
+    </ion-row>
+    <ion-row>
+      <ion-col size-sm="6" offset-sm="3">
+        <ion-item>
+          <ion-label position="floating">Last Name</ion-label>
+          <ion-input type="text" ngModel name="last-name" required></ion-input>
+        </ion-item>
+      </ion-col>
+    </ion-row>
+    <ion-row>
+      <ion-col size-sm="6" offset-sm="3">
+        <ion-item>
+          <ion-label position="floating">Number of Guest</ion-label>
+          <ion-select [ngModel]="'2'" name="guest-number">
+            <ion-select-option value="1">1</ion-select-option>
+            <ion-select-option value="2">2</ion-select-option>
+            <ion-select-option value="3">3</ion-select-option>
+            <ion-select-option value="4">4</ion-select-option>
+            <ion-select-option value="5">5</ion-select-option>
+            <ion-select-option value="6">6</ion-select-option>
+            <ion-select-option value="7">7</ion-select-option>
+            <ion-select-option value="8">8</ion-select-option>
+            <ion-select-option value="9">9</ion-select-option>
+            <ion-select-option value="10">10</ion-select-option>
+          </ion-select>
+        </ion-item>
+      </ion-col>
+    </ion-row>
+    <ion-row>
+      <ion-col size-sm="3" size-md="8">
+        <ion-label position="floating">Arrival</ion-label>
+        <ion-item>
+          <ion-label>{{ formattedFromString }}</ion-label>
+
+          <ion-button id="start-modal" fill="outline"
+          (click)="showPicker = !showPicker;"
+          >
+
+            {{
+              formattedFromString
+                ? "Update Arrival Date"
+                : "Select Arrival Date "
+            }}</ion-button
+          >
+
+          <!-- !testing -->
+          <ion-modal trigger="start-modal"  >
+            <ng-template>
+              <ion-header>
+                <ion-toolbar>
+                  <ion-buttons slot="start">
+                    <ion-button (click)="cancel()">Cancel</ion-button>
+                  </ion-buttons>
+                  <ion-title>Select Arrival</ion-title>
+                  <ion-buttons slot="end">
+                    <ion-button (click)="confirm()" [strong]="true"
+                      >Confirm</ion-button
+                    >
+                  </ion-buttons>
+                </ion-toolbar>
+              </ion-header>
+              <ion-content >
+                <ion-label> Arrival</ion-label>
+                <!-- ** THIS is working! -->
+                <ion-datetime
+                size="cover"
+                displayFormat="MMMM YY"
+                (ionCancel)="showPicker = false;"
+                  locale="en-US"
+                  value="2023-12-15T13:47:20.789"
+                  [min]="selectedPlace.availableFrom?.toISOString()"
+                  [max]="selectedPlace.availableTo?.toISOString()"
+                  [ngModel]="startDate"
+                  name="date-from"
+                  required
+                  #datetime
+                  #startDateCtrl="ngModel"
+                  showDefaultButtons="true"
+                  (ionChange)="fromDateChanged(datetime.value)"
+
+                  ></ion-datetime>
+
+                <!-- <ion-datetime #startTime value="{{ day.startTime }}" showDefaultButtons="true"
+                presentation="date" (ionChange)="setStartTime(day.index, startTime.value)">
+              </ion-datetime> -->
+              </ion-content>
+            </ng-template>
+          </ion-modal>
+        </ion-item>
+
+        <!-- !testing -->
+
+        <!-- <ion-item>
+          <ion-datetime
+            locale="en-US"
+            presentation="date-time"
+            [value]="formattedString"
+            [min]="selectedPlace.availableFrom?.toISOString()"
+            [max]="selectedPlace.availableTo?.toISOString()"
+            [ngModel]="startDate"
+            name="date-from"
+            required
+            #startDateCtrl="ngModel"
+            (ionChange)="fromDateChanged(startDateCtrl?.value)"
+          ></ion-datetime>
+
+        </ion-item> -->
+      </ion-col>
+      <ion-col size-sm="3" size-md="6" *ngIf="formattedFromString.length">
+        <ion-label position="floating">Departure</ion-label>
+
+        <!-- testing -->
+        <ion-item>
+          <ion-label>{{ formattedToString }}</ion-label>
+
+          <ion-button id="stop-modal" fill="outline">
+            {{
+              formattedToString
+                ? "Update Departure Date"
+                : "Select Departure Date "
+            }}</ion-button
+          >
+
+
+          <ion-modal trigger="stop-modal">
+            <ng-template>
+              <ion-header>
+                <ion-toolbar>
+                  <ion-buttons slot="start">
+                    <ion-button (click)="cancel()">Cancel</ion-button>
+                  </ion-buttons>
+                  <ion-title>Select Departure</ion-title>
+                  <ion-buttons slot="end">
+                    <ion-button (click)="confirm()" [strong]="true"
+                      >Confirm</ion-button
+                    >
+                  </ion-buttons>
+                </ion-toolbar>
+              </ion-header>
+              <ion-content>
+                <ion-label> Departure</ion-label>
+                <ion-datetime
+                locale="en-US"
+                  #endDateCtrl="ngModel"
+                  [value]="formattedFromDate"
+
+                  [min]="startDateCtrl.value"
+                  [max]="selectedPlace.availableTo?.toISOString()"
+                  [ngModel]="formattedToDate"
+                  name="date-to"
+                  required
+                  showDefaultButtons="true"
+                  ></ion-datetime>
+                  <!-- (ionChange)="toDateChanged(endDateCtrl?.value)" -->
+
+                <!-- <ion-datetime #startTime value="{{ day.startTime }}" showDefaultButtons="true"
+                presentation="date" (ionChange)="setStartTime(day.index, startTime.value)">
+              </ion-datetime> -->
+              </ion-content>
+            </ng-template>
+          </ion-modal>
+        </ion-item>
+        <!-- testing -->
+
+        <!-- <ion-item>
+          <ion-datetime
+            #endDateCtrl="ngModel"
+            presentation="date-time"
+            locale="en-US"
+            [value]="startDate"
+            [min]="startDate"
+            [max]="selectedPlace.availableTo?.toISOString()"
+            [ngModel]="endDate"
+            name="date-to"
+            required
+            (ionChange)="toDateChanged(endDateCtrl?.value)"
+          ></ion-datetime>
+
+        </ion-item> -->
+      </ion-col>
+    </ion-row>
+    <ion-row>
+      <ion-col size-sm="3" offset-sm="3"> </ion-col>
+    </ion-row>
+    <ion-row>
+      <ion-col size-sm="6" offset-sm="3">
+        <ion-button
+          type="submit"
+          color="primary"
+          (click)="onBookPlace()"
+
+          expand="block"
+          >Book Now!</ion-button
+        >
+        <!-- [disabled]="!f.valid || !datesValid()" -->
+      </ion-col>
+    </ion-row>
+  </ion-grid>
+  </form>
 </ion-content>
