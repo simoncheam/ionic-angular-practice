@@ -13,7 +13,9 @@ export class CreateBookingComponent implements OnInit {
   @Input() public selectedPlace: Place;
   @Input() selectedMode: 'select' | 'random';
   @ViewChild(IonModal) modal: IonModal;
+
   @ViewChild(IonDatetime) datetime: IonDatetime;
+
   showPicker = false;
   fromDateValue = format(new Date(), 'yyyy-MM-dd') + 'T09:00:00.000Z';
   toDateValue = format(new Date(), 'yyyy-MM-dd') + 'T09:00:00.000Z';
@@ -21,8 +23,8 @@ export class CreateBookingComponent implements OnInit {
   formattedToString = '';
   // current date
   public value = new Date(Date.now()).toISOString();
-  formattedFromDate: string;
-  formattedToDate: string;
+  public formattedFromDate: string;
+  public formattedToDate: string;
 
   public availableFrom: Date|undefined;
   public availableTo: Date|undefined;
@@ -31,9 +33,10 @@ export class CreateBookingComponent implements OnInit {
   endDate = '';
   startDateCtrl: NgModel;
   @ViewChild('f', { static: true }) form: NgForm;
+  formattedString: string;
 
   constructor(private modalCtrl: ModalController) {
-    // this.setToday();
+    this.setToday();
   }
 
   // ngOnInit() {
@@ -43,11 +46,15 @@ export class CreateBookingComponent implements OnInit {
 
   async ngOnInit() {
     if (this.selectedPlace) {
-    console.log('this.selectedPlace.availableFrom')
-    console.log(this.selectedPlace.availableFrom)
+    // console.log('this.selectedPlace.availableFrom')
+    // console.log(this.selectedPlace.availableFrom)
+// removed - .split('T')[0]
+    const formattedFromDate = await this.selectedPlace.availableFrom?.toISOString();
+    const formattedToDate = await this.selectedPlace.availableTo?.toISOString();
 
-    const formattedFromDate = await this.selectedPlace.availableFrom?.toISOString().split('T')[0];
-    const formattedToDate = await this.selectedPlace.availableTo?.toISOString().split('T')[0];
+    console.log('formattedFromDate', formattedFromDate)
+
+    console.log('formattedToDate', formattedToDate)
 
 
 
@@ -120,23 +127,23 @@ export class CreateBookingComponent implements OnInit {
     this.modalCtrl.dismiss({ message: 'This is a dummy message!' }, 'confirm');
   }
 
-  // setToday() {
-  //   this.formattedTodayString = format(
-  //     parseISO(format(new Date(), 'yyyy-MM-dd') + 'T09:00:00.000Z'),
-  //     'HH:mm, MMM d, yyyy'
-  //   );
-  // }
+  setToday() {
+    this.formattedString = format(
+      parseISO(format(new Date(), 'yyyy-MM-dd') + 'T09:00:00.000Z'),
+      'HH:mm, MMM d, yyyy'
+    );
+  }
 
-  fromDateChanged(value: any) {
+  async fromDateChanged(value: any) {
+    this.fromDateValue = value;
     this.showPicker = false;
     console.log(value);
-    this.fromDateValue = value;
 
     this.formattedFromString = format(parseISO(value), 'HH:mm, MMM d, yyyy');
     // console.log('this.formattedFromString')
     console.log(this.formattedFromString);
   }
-  toDateChanged(value: any) {
+  async toDateChanged(value: any) {
     this.toDateValue = value;
     console.log('End Date');
     console.log(value);
@@ -145,4 +152,44 @@ export class CreateBookingComponent implements OnInit {
     // console.log('this.formattedFromString')
     console.log(this.formattedToString);
   }
+
+
+// !!! -ion-date modal methods
+
+modalFromDateChanged(value: string ) {
+  console.log('modal From Date changed');
+  console.log(value);
+  this.fromDateValue = value;
+  this.formattedString = format(parseISO(value), 'HH:mm, MMM d, yyyy');
+}
+modalToDateChanged(value: string ) {
+
+  console.log('modal End Date changed');
+  console.log(value);
+
+  this.toDateValue = value;
+  this.formattedToString = format(parseISO(value), 'HH:mm, MMM d, yyyy');
+}
+
+
+
+
+async close() {
+  this.showPicker = false
+  console.log('close - iondatetime')
+  await this.datetime.cancel(true);
+  await this.modal.dismiss(null, 'cancel');
+}
+
+async select() {
+  this.showPicker = false
+  console.log('select - iondatetime')
+  await this.datetime.confirm(true);
+  await this.modal.dismiss( 'confirm');
+
+}
+
+
+// !!! -ion-date modal methods
+
 }

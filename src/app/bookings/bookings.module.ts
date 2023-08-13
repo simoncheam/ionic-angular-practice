@@ -13,6 +13,6 @@ import { CreateBookingComponent } from './create-booking/create-booking.componen
     IonicModule,
     BookingsPageRoutingModule
   ],
-  declarations: [BookingsPage]
+  declarations: [BookingsPage, CreateBookingComponent]
 })
 export class BookingsPageModule {}

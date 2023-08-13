@@ -16,6 +16,6 @@ import { CreateBookingComponent } from 'src/app/bookings/create-booking/create-b
     IonicModule,
     PlaceDetailPageRoutingModule
   ],
-  declarations: [PlaceDetailPage, CreateBookingComponent]
+  declarations: [PlaceDetailPage]
 })
 export class PlaceDetailPageModule {}
