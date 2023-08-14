@@ -79,12 +79,10 @@ export class PlaceDetailPage implements OnInit {
   // }
 
   async openBookingModal(mode: 'select' | 'random') {
-    console.log(mode);
     const modal = await this.modalCtrl.create({
       component: CreateBookingComponent,
       componentProps: { selectedPlace: this.place, selectedMode: mode },
     });
-    console.log(modal);
 
     await modal.present();
     const bookedPlace = await modal.onDidDismiss();

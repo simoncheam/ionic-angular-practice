@@ -58,180 +58,97 @@
         </ion-col>
       </ion-row>
       <ion-row>
-        <ion-col size-sm="3" size-md="8">
+        <ion-col size-sm="6" offset-sm="3" size-md="6" offset-md="3">
           <ion-label position="floating">Arrival</ion-label>
           <ion-item>
-            <ion-label>{{ formattedString }}</ion-label>
+            <ion-icon
+              icon="calendar-outline"
+              slot="start"
+              color="primary"
+            ></ion-icon>
+            <ion-label>{{ formattedFromString }}</ion-label>
 
-            <ion-button
-              id="start-modal"
-              fill="outline"
-              (click)="showPicker = !showPicker"
-            >
+            <ion-button id="start-modal" fill="outline">
               {{
-                formattedFromString
-                  ? "Update Arrival Date"
-                  : "Select Arrival Date "
+                formattedFromString.length ? "Update Arrival" : "Select Arrival"
               }}</ion-button
             >
 
-            <!-- !testing -->
-            <ion-modal trigger="start-modal" >
+            <ion-modal trigger="start-modal">
               <ng-template>
-                <!-- <ion-header>
-                  <ion-toolbar>
-                    <ion-buttons slot="start">
-                      <ion-button (click)="cancel()">Cancel</ion-button>
-                    </ion-buttons>
-                    <ion-title>Select Arrival</ion-title>
-                    <ion-buttons slot="end">
-                      <ion-button (click)="confirm()" [strong]="true"
-                        >Confirm</ion-button
-                      >
-                    </ion-buttons>
-                  </ion-toolbar>
-                </ion-header> -->
                 <ion-content scrollY="false">
                   <ion-label> Arrival</ion-label>
-                  <!-- testing
-                   [min]="selectedPlace.availableFrom?.toISOString()"
-                  -->
-                  <!-- ** THIS is working! -->
+
                   <ion-datetime
-                  [value]="formattedFromDate"
                     size="cover"
-                    [presentation]="'date-time'"
+                    [presentation]="'date'"
                     [min]="value"
                     [max]="selectedPlace.availableTo?.toISOString()"
                     [ngModel]="startDate"
                     name="date-from"
                     required
-                    #datetime
-                    #startDateCtrl="ngModel"
-                    (ionChange)="modalFromDateChanged(startDateCtrl.value)"
-                    (ionCancel)="showPicker = false;"
+                    #datetime="ngModel"
+                    (ionChange)="modalFromDateChanged(datetime.value)"
                   >
-                  <ion-buttons slot="buttons">
-                    <ion-button (click)="close()">Dismiss</ion-button>
-                    <ion-button (click)="select()" color="primary">Select</ion-button>
-                  </ion-buttons>
-
-
-
-                </ion-datetime>
-
-                  <!-- <ion-datetime #startTime value="{{ day.startTime }}"
-                  value="2023-12-15T13:47:20.789" / example
-                  showDefaultButtons="true"
-                presentation="date" (ionChange)="setStartTime(day.index, startTime.value)">
-              </ion-datetime> -->
+                    <ion-buttons slot="buttons">
+                      <ion-button (click)="close()">Dismiss</ion-button>
+                      <ion-button (click)="select()" color="primary"
+                        >Select</ion-button
+                      >
+                    </ion-buttons>
+                  </ion-datetime>
                 </ion-content>
               </ng-template>
             </ion-modal>
           </ion-item>
-
-          <!-- !testing -->
-
-          <!-- <ion-item>
-          <ion-datetime
-            locale="en-US"
-            presentation="date-time"
-            [value]="formattedString"
-            [min]="selectedPlace.availableFrom?.toISOString()"
-            [max]="selectedPlace.availableTo?.toISOString()"
-            [ngModel]="startDate"
-            name="date-from"
-            required
-            #startDateCtrl="ngModel"
-            (ionChange)="fromDateChanged(startDateCtrl?.value)"
-          ></ion-datetime>
-
-        </ion-item> -->
         </ion-col>
-        <ion-col size-sm="3" size-md="6" >
+        <ion-col size-sm="6" offset-sm="3" size-md="6" offset-md="3">
           <ion-label position="floating">Departure</ion-label>
 
-          <!-- testing -->
-          <ion-item>
+          <ion-item *ngIf="endDate">
+            <ion-icon
+              icon="calendar-outline"
+              slot="start"
+              color="primary"
+            ></ion-icon>
+
             <ion-label>{{ formattedToString }}</ion-label>
 
-            <ion-button id="stop-modal" fill="outline"
-            (click)="showPicker = !showPicker"
-            >
+            <ion-button id="stop-modal" fill="outline">
               {{
-                formattedToString
-                  ? "Update Departure Date"
-                  : "Select Departure Date "
+                formattedToString ?
+                "Update Departure" :
+                "Select Departure"
               }}</ion-button
             >
 
-            <ion-modal trigger="stop-modal"  *ngIf="showPicker">
+            <ion-modal trigger="stop-modal">
               <ng-template>
-                <!-- <ion-header>
-                  <ion-toolbar>
-                    <ion-buttons slot="start">
-                      <ion-button (click)="cancel()">Cancel</ion-button>
-                    </ion-buttons>
-                    <ion-title>Select Departure</ion-title>
-                    <ion-buttons slot="end">
-                      <ion-button (click)="confirm()" [strong]="true"
-                        >Confirm</ion-button
-                      >
-                    </ion-buttons>
-                  </ion-toolbar>
-                </ion-header> -->
                 <ion-content scrollY="false">
                   <ion-label> Departure</ion-label>
                   <ion-datetime
-                  #datetime
-                  [value]="toDateValue"
-                  size="cover"
-                  [presentation]="'date-time'"
-
+                    #datetime
+                    size="cover"
+                    [presentation]="'date'"
                     #endDateCtrl="ngModel"
-                    [min]="startDateCtrl.value"
+                    [min]="startDate"
                     [max]="selectedPlace.availableTo?.toISOString()"
-                    [ngModel]="formattedToDate"
+                    [ngModel]="endDate"
                     name="date-to"
                     required
                     (ionChange)="modalToDateChanged(endDateCtrl.value)"
-                    (ionCancel)="showPicker = false;"
                   >
-                <!-- !datetime btns -->
-                <ion-buttons slot="buttons">
-                  <ion-button (click)="close()">Dismiss</ion-button>
-                  <ion-button (click)="select()" color="primary">Select</ion-button>
-                </ion-buttons>
-
-
-
-                </ion-datetime>
-                  <!-- (ionChange)="toDateChanged(endDateCtrl?.value)" -->
-
-                  <!-- <ion-datetime #startTime value="{{ day.startTime }}" showDefaultButtons="true"
-                presentation="date" (ionChange)="setStartTime(day.index, startTime.value)">
-              </ion-datetime> -->
+                    <ion-buttons slot="buttons">
+                      <ion-button (click)="close()">Dismiss</ion-button>
+                      <ion-button (click)="select()" color="primary"
+                        >Select</ion-button
+                      >
+                    </ion-buttons>
+                  </ion-datetime>
                 </ion-content>
               </ng-template>
             </ion-modal>
           </ion-item>
-          <!-- testing -->
-
-          <!-- <ion-item>
-          <ion-datetime
-            #endDateCtrl="ngModel"
-            presentation="date-time"
-            locale="en-US"
-            [value]="startDate"
-            [min]="startDate"
-            [max]="selectedPlace.availableTo?.toISOString()"
-            [ngModel]="endDate"
-            name="date-to"
-            required
-            (ionChange)="toDateChanged(endDateCtrl?.value)"
-          ></ion-datetime>
-
-        </ion-item> -->
         </ion-col>
       </ion-row>
       <ion-row>
@@ -244,9 +161,9 @@
             color="primary"
             (click)="onBookPlace()"
             expand="block"
+            [disabled]="!f.valid || !datesValid()"
             >Book Now!</ion-button
           >
-          <!-- [disabled]="!f.valid || !datesValid()" -->
         </ion-col>
       </ion-row>
     </ion-grid>
