@@ -1,12 +1,14 @@
 import { Injectable } from '@angular/core';
 import { Place } from './places.model';
+import { AuthService } from '../auth/auth.service';
+import { BehaviorSubject } from 'rxjs';
+import { take } from 'rxjs/operators';
 
 @Injectable({
-  providedIn: 'root'
+  providedIn: 'root',
 })
 export class PlacesService {
-
-  private _places: Place[] = [
+  private _places = new BehaviorSubject<Place[]>([
     new Place(
       'p1',
       'Manhattan Mansion',
@@ -15,6 +17,7 @@ export class PlacesService {
       199.99,
       new Date('2023-01-01'),
       new Date('2024-12-31'),
+      'abc'
     ),
     new Place(
       'p2',
@@ -24,6 +27,7 @@ export class PlacesService {
       199.99,
       new Date('2023-01-01'),
       new Date('2024-12-31'),
+      'abc'
     ),
     new Place(
       'p3',
@@ -33,18 +37,50 @@ export class PlacesService {
       999.99,
       new Date('2023-01-01'),
       new Date('2024-12-31'),
+      'abc'
     ),
-
-  ];
+  ]);
 
   get places() {
-    return [...this._places];
+    // ! removed making copy, now using observables
+    // return [...this._places];
+
+    //this gives a subscribable object
+    return this._places.asObservable();
   }
 
   public getPlace(id: string) {
-    return {...this._places.find(
-      p => p.id === id)};
+    return { ...this._places.find((p) => p.id === id) };
   }
 
-  constructor() { }
+  public addPlace(
+    title: string,
+    description: string,
+    price: number,
+    availableFrom: Date,
+    availableTo: Date
+  ) {
+    const newPlace = new Place(
+      Math.random().toString(),
+      title,
+      description,
+      'https://tripfreakz.com/uploads/pal01.png',
+      price,
+      availableFrom,
+      availableTo,
+      this.authService.userId
+    );
+
+    console.log(newPlace);
+
+    // ! using operators
+    //* means - look at places subject, then subscribe, but only take 1 object, then cancel subscription
+    this.places.pipe(take(1)).subscribe((places) => {
+      // ! next will emit a new event
+      //*concat = js array method- takes old array and adds new item which returns a new array
+      this._places.next(places.concat(newPlace));
+    });
+  }
+
+  constructor(private authService: AuthService) {}
 }

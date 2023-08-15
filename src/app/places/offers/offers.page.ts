@@ -16,8 +16,15 @@ export class OffersPage implements OnInit {
   constructor(private placesService: PlacesService, private router: Router) {}
 
   ngOnInit() {
-    this.offers = this.placesService.places;
+    // this.offers = this.placesService.places;
   }
+
+ionViewDidEnter() {
+  console.log('reloading places')
+  this.offers = this.placesService.places;
+}
+
+
   onEdit(slidingItem: IonItemSliding, offerId: string) {
     console.log('editing item');
 

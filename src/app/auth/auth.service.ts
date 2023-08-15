@@ -9,11 +9,16 @@ export class AuthService {
 
   private _isAuthed = true; // TODO: change to false after development
 
+  private _userId = 'abd';
+
   //getter method to avoid overwriting _isAuthed
   get isAuthed(){
     return this._isAuthed;
   }
 
+  get userId(){
+    return this._userId;
+  }
 
 
   login(){
