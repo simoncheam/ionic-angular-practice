@@ -159,9 +159,8 @@
           <ion-button
             type="submit"
             color="primary"
-            (click)="onBookPlace()"
             expand="block"
-            [disabled]="!f.valid || !datesValid()"
+            [disabled]="!f.valid ||!datesValid() "
             >Book Now!</ion-button
           >
         </ion-col>

@@ -1,5 +1,5 @@
 import { Component, Input, OnInit, ViewChild } from '@angular/core';
-import { NgForm, NgModel } from '@angular/forms';
+import { FormGroup, NgForm, NgModel } from '@angular/forms';
 import { IonDatetime, IonModal, ModalController } from '@ionic/angular';
 import { format, parseISO } from 'date-fns';
 import { Place } from 'src/app/places/places.model';
@@ -15,7 +15,8 @@ export class CreateBookingComponent implements OnInit {
   @ViewChild(IonModal) modal: IonModal;
 
   @ViewChild(IonDatetime) datetime: IonDatetime;
-  @ViewChild(IonDatetime) datetime2: IonDatetime;
+
+  @ViewChild('f', { static: true }) form: NgForm | FormGroup;
 
   showPicker = false;
   fromDateValue = format(new Date(), 'yyyy-MM-dd') + 'T09:00:00.000Z';
@@ -33,13 +34,16 @@ export class CreateBookingComponent implements OnInit {
   startDate = '';
   endDate = '';
   startDateCtrl: NgModel;
-  @ViewChild('f', { static: true }) form: NgForm;
   formattedString: string;
 
-  constructor(private modalCtrl: ModalController) {
-  }
+  constructor(private modalCtrl: ModalController) {}
 
   async ngOnInit() {
+
+    // TODO: add form control initialization logic
+    // TODO: add function
+
+
     if (!this.selectedPlace) {
       return;
     }
@@ -64,6 +68,7 @@ export class CreateBookingComponent implements OnInit {
       }
 
       if (this.selectedMode === 'random') {
+        console.log('random mode selected');
         // *get ms since beginning
         const timeSinceBeginning = availableFrom.getTime();
         const timeRange =
@@ -75,11 +80,21 @@ export class CreateBookingComponent implements OnInit {
         );
         this.startDate = randomStartDate.toISOString();
 
+        this.formattedFromString = format(
+          parseISO(this.startDate),
+          'HH:mm, MMM d, yyyy'
+        );
+
         // ! random end date
         const randomEndDate = new Date(
           randomStartDate.getTime() + Math.random() * (6 * 24 * 60 * 60 * 1000)
         );
         this.endDate = randomEndDate.toISOString();
+        // format string for display
+        this.formattedToString = format(
+          parseISO(this.endDate),
+          'HH:mm, MMM d, yyyy'
+        );
       }
     }
   }
@@ -88,20 +103,46 @@ export class CreateBookingComponent implements OnInit {
     this.modalCtrl.dismiss(null, 'cancel');
   }
 
+  async datesValid() {
+    if (!this.form) {
+      console.log('datesValid - invalid form')
+      return false;
+    }
 
-
-  datesValid() {
-    // const startDate = new Date(this.form.value['date-from']);
-    // const endDate = new Date(this.form.value['date-to']);
-    return this.endDate > this.startDate;
+    const startDate = new Date(this.form.value['date-from']);
+    console.log(startDate);
+    const endDate = new Date(this.form.value['date-to']);
+    console.log(endDate);
+    console.log('dates valid:');
+    console.log(endDate > startDate);
+    return endDate > startDate;
   }
   //! calendar modal methods:
 
   public async onBookPlace() {
+    console.log('this.form');
+    console.log(this.form);
+    this.datesValid();
+    if (!this.form.valid || !this.datesValid()) {
+      console.log('invalid form');
+      return;
+    }
+
     //TODO: input validation, create/update mode settings
     // add APIService call for CRUD ops if needed
 
-    this.modalCtrl.dismiss({ message: 'This is a dummy message!' }, 'confirm');
+    this.modalCtrl.dismiss(
+      {
+        bookingData: {
+          firstName: this.form.value['first-name'],
+          lastName: this.form.value['last-name'],
+          guestNumber: +this.form.value['guest-number'],
+          startDate: this.form.value['date-from'],
+          endDate: this.form.value['date-to'],
+        },
+      },
+      'confirm'
+    );
   }
 
   // setToday() {
@@ -114,13 +155,18 @@ export class CreateBookingComponent implements OnInit {
   // * ion-date modal methods
 
   modalFromDateChanged(value: string) {
-
     this.startDate = value;
     // format string for display
     this.formattedFromString = format(parseISO(value), 'HH:mm, MMM d, yyyy');
   }
   modalToDateChanged(value: string) {
     this.endDate = value;
+
+    console.log('this.endDate');
+    console.log(this.endDate);
+    console.log('this.form.value["date-to"]');
+    console.log(this.form.value['date-to']);
+
     // format string for display
     this.formattedToString = format(parseISO(value), 'HH:mm, MMM d, yyyy');
   }
