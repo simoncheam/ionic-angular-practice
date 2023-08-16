@@ -1,8 +1,8 @@
 import { Injectable } from '@angular/core';
 import { Place } from './places.model';
 import { AuthService } from '../auth/auth.service';
-import { BehaviorSubject } from 'rxjs';
-import { take } from 'rxjs/operators';
+import { BehaviorSubject, Observable } from 'rxjs';
+import { take, map, filter, tap, delay } from 'rxjs/operators';
 
 @Injectable({
   providedIn: 'root',
@@ -15,7 +15,7 @@ export class PlacesService {
       'In the heart of New York City',
       'https://i.insider.com/5a032aef3dbef471018b49d9?width=700',
       199.99,
-      new Date('2023-01-01'),
+      new Date('2023-01-02'),
       new Date('2024-12-31'),
       'abc'
     ),
@@ -49,8 +49,18 @@ export class PlacesService {
     return this._places.asObservable();
   }
 
-  public getPlace(id: string) {
-    return { ...this._places.find((p) => p.id === id) };
+  public getPlace(id: string | null): Observable<Place> {
+    // ! removed making copy, now using observables
+    //! need to return a single observable, will filter
+    // get latest list (take gives array of places), then map over to get single place
+    return this.places.pipe(
+      take(1),
+      map((places) => {
+        // will find only one place
+        return { ...places.find((p) => p.id === id) };
+      })
+    );
+    // ! map wraps in observable
   }
 
   public addPlace(
@@ -75,11 +85,16 @@ export class PlacesService {
 
     // ! using operators
     //* means - look at places subject, then subscribe, but only take 1 object, then cancel subscription
-    this.places.pipe(take(1)).subscribe((places) => {
-      // ! next will emit a new event
-      //*concat = js array method- takes old array and adds new item which returns a new array
-      this._places.next(places.concat(newPlace));
-    });
+    return this.places
+      .pipe(
+        take(1),
+        delay(1000), //delay in milliseconds
+        tap(places => {
+            // ! next will emit a new event
+            //*concat = js array method- takes old array and adds new item which returns a new array
+            this._places.next(places.concat(newPlace));
+        })
+      )
   }
 
   constructor(private authService: AuthService) {}
