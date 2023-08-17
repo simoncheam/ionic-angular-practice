@@ -88,7 +88,7 @@
                     size="cover"
                     [presentation]="'date'"
                     [min]="value"
-                    [max]="selectedPlace.availableTo?.toISOString()"
+                    [max]="selectedPlace.availableTo.toISOString()"
                     [(ngModel)]="formData.startDate"
                     [ngModel]="startDate"
                     name="date-from"
@@ -140,7 +140,7 @@
                     [presentation]="'date'"
                     #endDateCtrl="ngModel"
                     [min]="startDate"
-                    [max]="selectedPlace.availableTo?.toISOString()"
+                    [max]="selectedPlace.availableTo.toISOString()"
                     [(ngModel)]="formData.endDate"
                     [ngModel]="endDate"
 

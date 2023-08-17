@@ -9,7 +9,7 @@ export class AuthService {
 
   private _isAuthed = true; // TODO: change to false after development
 
-  private _userId = 'abd';
+  private _userId = 'xyz';
 
   //getter method to avoid overwriting _isAuthed
   get isAuthed(){

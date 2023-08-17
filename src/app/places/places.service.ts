@@ -8,6 +8,8 @@ import { take, map, filter, tap, delay } from 'rxjs/operators';
   providedIn: 'root',
 })
 export class PlacesService {
+  constructor(private authService: AuthService) {}
+
   private _places = new BehaviorSubject<Place[]>([
     new Place(
       'p1',
@@ -27,7 +29,7 @@ export class PlacesService {
       199.99,
       new Date('2023-01-01'),
       new Date('2024-12-31'),
-      'abc'
+      'xyz'
     ),
     new Place(
       'p3',
@@ -49,7 +51,7 @@ export class PlacesService {
     return this._places.asObservable();
   }
 
-  public getPlace(id: string | null): Observable<Place> {
+  public getPlace(id: string ): Observable<Place> {
     // ! removed making copy, now using observables
     //! need to return a single observable, will filter
     // get latest list (take gives array of places), then map over to get single place
@@ -57,7 +59,7 @@ export class PlacesService {
       take(1),
       map((places) => {
         // will find only one place
-        return { ...places.find((p) => p.id === id) };
+        return { ...places.find((p) => p.id === id)! };
       })
     );
     // ! map wraps in observable
@@ -70,6 +72,7 @@ export class PlacesService {
     availableFrom: Date,
     availableTo: Date
   ) {
+    // *initialize new place
     const newPlace = new Place(
       Math.random().toString(),
       title,
@@ -85,17 +88,42 @@ export class PlacesService {
 
     // ! using operators
     //* means - look at places subject, then subscribe, but only take 1 object, then cancel subscription
-    return this.places
-      .pipe(
-        take(1),
-        delay(1000), //delay in milliseconds
-        tap(places => {
-            // ! next will emit a new event
-            //*concat = js array method- takes old array and adds new item which returns a new array
-            this._places.next(places.concat(newPlace));
-        })
-      )
+    return this.places.pipe(
+      take(1),
+      delay(1000), //delay in milliseconds
+      tap((places) => {
+        // ! next will emit a new event
+        //*concat = js array method- takes old array and adds new item which returns a new array
+        this._places.next(places.concat(newPlace));
+      })
+    );
   }
 
-  constructor(private authService: AuthService) {}
+  updatePlace(placeId: string, title: string, description: string) {
+    // fetch the latest list of places - take 1 is latest snapshot
+    return this.places.pipe(
+      take(1),
+      delay(1000),
+      tap((places) => {
+        const updatedPlaceIndex = places.findIndex((pl) => pl.id === placeId);
+        const updatedPlaces = [...places];
+        const oldPlace = updatedPlaces[updatedPlaceIndex];
+
+        updatedPlaces[updatedPlaceIndex] = new Place(
+          oldPlace.id,
+          title,
+          description,
+          oldPlace.imageUrl,
+          oldPlace.price,
+          oldPlace.availableFrom,
+          oldPlace.availableTo,
+          oldPlace.userId
+        );
+        //emits updated places array
+        this._places.next(updatedPlaces);
+      })
+    );
+
+    //replace the place with the updated place
+  }
 }
